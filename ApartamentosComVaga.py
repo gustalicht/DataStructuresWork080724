@@ -1,49 +1,38 @@
 class ListaApartamentosComVaga:
     def __init__(self):
-        self.topo = None
+        self.inicio = None
+        self.fim = None
 
     def adicionar(self, apartamento):
-        if self.topo is None or self.topo.vaga > apartamento.vaga:
-            apartamento.proximo = self.topo
-            self.topo = apartamento
+        if self.inicio is None:
+            self.inicio = apartamento
+            self.fim = apartamento
         else:
-            atual = self.topo
-            while atual.proximo is not None and atual.proximo.vaga < apartamento.vaga:
-                atual = atual.proximo
-            apartamento.proximo = atual.proximo
-            atual.proximo = apartamento
+            self.fim.proximo = apartamento
+            self.fim = apartamento
 
-    def liberar_vaga(self, numero_vaga):
-        if self.topo is None:
+    def liberar_vaga(self):
+        if self.inicio is None:
             return None
-        if self.topo.vaga == numero_vaga:
-            liberado = self.topo
-            self.topo = self.topo.proximo
-            liberado.proximo = None
-            return liberado
-        atual = self.topo
-        while atual.proximo is not None and atual.proximo.vaga != numero_vaga:
-            atual = atual.proximo
-        if atual.proximo is None:
-            return None
-        liberado = atual.proximo
-        atual.proximo = atual.proximo.proximo
+        liberado = self.inicio
+        self.inicio = self.inicio.proximo
+        if self.inicio is None:
+            self.fim = None
         liberado.proximo = None
         return liberado
 
     def imprimir(self):
-        if self.topo is None:
-            print("Nenhum apartamento com vaga de garagem.")
+        if self.inicio is None:
+            print("Nenhum apartamento.")
         else:
-            print("Apartamentos com vaga de garagem:")
-            atual = self.topo
+            atual = self.inicio
             while atual is not None:
-                print(f"Apartamento {atual.numero} - Vaga: {atual.vaga}")
+                atual.imprimir()
                 atual = atual.proximo
 
     def contar_apartamentos_com_vaga(self):
         count = 0
-        atual = self.topo
+        atual = self.inicio
         while atual is not None:
             if atual.vaga is not None:
                 count += 1

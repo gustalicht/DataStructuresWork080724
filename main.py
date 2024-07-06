@@ -1,23 +1,23 @@
-from ApartamentosComVaga import ListaApartamentosComVaga
-from FilaEspera import FilaEspera
-from Apartamento import Apartamento
 from Torre import Torre
+from Apartamento import Apartamento
+from ApartamentosComVaga import ListaApartamentosComVaga
+
 def exibir_menu():
-    print("\nMenu:")
-    print("1. Cadastrar apartamento")
+    print("1. Adicionar apartamento")
     print("2. Liberar vaga de garagem")
-    print("3. Imprimir lista de apartamentos com vaga")
-    print("4. Imprimir fila de espera por vaga de garagem")
+    print("3. Mostrar apartamentos com vaga")
+    print("4. Mostrar fila de espera")
     print("5. Sair")
 
 def main():
-    lista_apartamentos = ListaApartamentosComVaga()
-    fila_espera = FilaEspera()
     torres = [
-         Torre(1, "Torre A", "Endereço A"),
-        Torre(2, "Torre B", "Endereço B"),
-        Torre(3, "Torre C", "Endereço C")
+        Torre(1, "Torre 1", "Endereço 1"),
+        Torre(2, "Torre 2", "Endereço 2"),
+        Torre(3, "Torre 3", "Endereço 3"),
     ]
+
+    lista_apartamentos = ListaApartamentosComVaga()
+    fila_espera = ListaApartamentosComVaga()
 
     while True:
         exibir_menu()
@@ -25,53 +25,51 @@ def main():
 
         if opcao == 1:
             id = int(input("ID do apartamento: "))
-            numero = int(input("Número do apartamento: "))
+            numero = input("Número do apartamento: ")
             print("Torres disponíveis:")
             for torre in torres:
-                print(f"{torre.id}. {torre.nome} - {torre.endereco}")
+                print(f"{torre.id} - {torre.nome}")
             torre_id = int(input("ID da torre: "))
-            vaga = int(input("Número da vaga de garagem (ou -1 se não tiver): "))
             torre = next((torre for torre in torres if torre.id == torre_id), None)
-            if torre is None:
-                print("Torre não encontrada.")
-                continue
-            if torre.apartamento_existe(id, numero):
-                print("Erro: ID ou número do apartamento já existente na torre.")
-                continue
-            if torre.quantidade_apartamentos() >= 10:
-                print("Erro: Torre já possui 10 apartamentos.")
-                continue
+            vaga = int(input("Número da vaga (ou -1 se não houver): "))
+
             apartamento = Apartamento(id, numero, vaga if vaga != -1 else None, torre)
-            torre.adicionar_apartamento(apartamento)
-            if vaga == -1 or lista_apartamentos.contar_apartamentos_com_vaga() >= 10:
-                fila_espera.adicionar(apartamento)
+            
+            if torre.apartamento_existe(id, numero):
+                print("Erro: Apartamento com o mesmo ID ou número já existe nesta torre.")
             else:
-                lista_apartamentos.adicionar(apartamento)
-                
+                torre.adicionar_apartamento(apartamento)
+                if apartamento.vaga is not None:
+                    lista_apartamentos.adicionar(apartamento)
+                else:
+                    fila_espera.adicionar(apartamento)
+
         elif opcao == 2:
-            numero_vaga = int(input("Número da vaga a ser liberada: "))
-            liberado = lista_apartamentos.liberar_vaga(numero_vaga)
-            if liberado is not None:
-                fila_espera.adicionar(liberado)
-                novo_apartamento = fila_espera.remover()
-                if novo_apartamento is not None:
+            if lista_apartamentos.inicio is None:
+                print("Nenhum apartamento com vaga de garagem disponível para liberar.")
+                continue
+            
+            apartamento = lista_apartamentos.liberar_vaga()
+            numero_vaga = apartamento.vaga
+            print(f"Apartamento {apartamento.numero} liberou a vaga {numero_vaga}.")
+            
+            if fila_espera.inicio is not None:
+                novo_apartamento = fila_espera.liberar_vaga()
+                if novo_apartamento:
                     novo_apartamento.vaga = numero_vaga
                     lista_apartamentos.adicionar(novo_apartamento)
-                print("Vaga liberada e novo apartamento alocado.")
-            else:
-                print("Vaga não encontrada.")
+                    print(f"Apartamento {novo_apartamento.numero} da fila de espera agora tem a vaga {numero_vaga}.")
 
         elif opcao == 3:
+            print("Apartamentos com vaga de garagem:")
             lista_apartamentos.imprimir()
 
         elif opcao == 4:
+            print("Fila de espera por vagas de garagem:")
             fila_espera.imprimir()
 
         elif opcao == 5:
             break
-
-        else:
-            print("Opção inválida. Tente novamente.")
 
 if __name__ == "__main__":
     main()
