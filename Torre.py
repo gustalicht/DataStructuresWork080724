@@ -14,6 +14,11 @@ class Torre:
                 return True
         return False
 
-
     def quantidade_apartamentos(self):
         return len(self.apartamentos)
+
+    def cadastrar(self):
+        print(f"Torre {self.nome} cadastrada com endereço {self.endereco}")
+
+    def imprimir(self):
+        print(f"Torre {self.nome}, Endereço: {self.endereco}")
