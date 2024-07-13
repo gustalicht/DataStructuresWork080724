@@ -8,12 +8,17 @@ class Torre:
     def adicionar_apartamento(self, apartamento):
         self.apartamentos.append(apartamento)
 
-    def apartamento_existe(self, id, numero):
+    def id_existe(self, id):
         for apartamento in self.apartamentos:
-            if apartamento.id == id or apartamento.numero == numero:
+            if apartamento.id == id:
                 return True
         return False
 
+    def numero_existe(self, numero):
+        for apartamento in self.apartamentos:
+            if apartamento.numero == numero:
+                return True
+        return False
     def quantidade_apartamentos(self):
         return len(self.apartamentos)
 
